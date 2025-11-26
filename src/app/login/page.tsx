@@ -1,31 +1,27 @@
 "use client";
 
-import { useActionState, useState } from 'react';
-import { createUser } from './actions';
+import { useActionState, useState } from "react";
+import { createUser } from "./actions";
 
-interface UserFormData {
-    name: string;
-    email: string;
-    password: string;
-    address: string;
-    phone: string;
+type TInitialState = {
+    errors: {
+        name?: string
+        email?: string
+        password?: string
+    },
+    message: string
 }
-const initialState = {
-    name: '',
-    email: '',
-    password: '',
-    address: '',
-    phone: '',
-}
+
+const initialState: TInitialState = { errors: {}, message: "" };
 
 export default function UserRegistrationForm() {
-    const [state, fromAction, pending] = useActionState(createUser, initialState)
-    // const onSubmit = async (e: React.FormEvent) => {
-    //     e.preventDefault()
+    const [state, formAction, pending] = useActionState(createUser, initialState);
 
-    // };
-    const errors = state?.errors
-    console.log(state)
+    const [values, setValues] = useState({ name: "", email: "", password: "" });
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setValues({ ...values, [e.target.name]: e.target.value });
+    };
 
     return (
         <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -36,76 +32,77 @@ export default function UserRegistrationForm() {
                         <p className="mt-2 text-gray-600">Register a new user account</p>
                     </div>
 
-                    <form action={fromAction} className="space-y-6">
-                        {/* Name Field */}
+                    {state?.message && (
+                        <p className="text-center mb-4 text-green-600 text-sm font-medium">
+                            {state.message}
+                        </p>
+                    )}
+
+                    <form action={formAction} className="space-y-6">
+                        {/* Name */}
                         <div>
-                            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-sm font-medium text-gray-700">
                                 Full Name
                             </label>
                             <input
-                                type="text"
-                                id="name"
                                 name="name"
-                                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors?.name ? 'border-red-500' : 'border-gray-300'
+                                value={values.name}
+                                onChange={handleChange}
+                                className={`w-full text-black px-3 py-2 border rounded-md ${state.errors?.name ? "border-red-500" : "border-gray-300"
                                     }`}
                                 placeholder="Enter your full name"
                             />
-                            {/* {errors.name && (
-                                <p className="mt-1 text-sm text-red-600">{errors.name}</p>
-                            )} */}
+                            {state.errors?.name && (
+                                <p className="text-red-500 text-sm">{state.errors.name}</p>
+                            )}
                         </div>
 
-                        {/* Email Field */}
+                        {/* Email */}
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-sm font-medium text-gray-700">
                                 Email Address
                             </label>
                             <input
                                 type="email"
-                                id="email"
                                 name="email"
-                                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors?.email ? 'border-red-500' : 'border-gray-300'
+                                value={values.email}
+                                onChange={handleChange}
+                                className={`w-full text-black px-3 py-2 border rounded-md ${state.errors?.email ? "border-red-500" : "border-gray-300"
                                     }`}
                                 placeholder="Enter your email"
                             />
-                            {/* {errors.email && (
-                                <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-                            )} */}
+                            {state.errors?.email && (
+                                <p className="text-red-500 text-sm">{state.errors.email}</p>
+                            )}
                         </div>
 
-                        {/* Password Field */}
+                        {/* Password */}
                         <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-sm font-medium text-gray-700">
                                 Password
                             </label>
                             <input
                                 type="password"
-                                id="password"
                                 name="password"
-                                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors?.password ? 'border-red-500' : 'border-gray-300'
+                                value={values.password}
+                                onChange={handleChange}
+                                className={`w-full text-black px-3 py-2 border rounded-md ${state.errors?.password ? "border-red-500" : "border-gray-300"
                                     }`}
                                 placeholder="Enter your password"
                             />
-                            {/* {errors.password && (
-                                <p className="mt-1 text-sm text-red-600">{errors.password}</p>
-                            )} */}
+                            {state.errors?.password && (
+                                <p className="text-red-500 text-sm">{state.errors.password}</p>
+                            )}
                         </div>
-                        {/* Submit Button */}
-                        <div>
-                            <button
-                                type="submit"
-                                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-                            >
-                                {pending ? (
-                                    <div className="flex items-center">
-                                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                                        Registering...
-                                    </div>
-                                ) : (
-                                    'Register User'
-                                )}
-                            </button>
-                        </div>
+
+                        {/* Submit */}
+                        <button
+                            type="submit"
+                            disabled={pending}
+                            className="w-full py-3 text-white bg-blue-600 hover:bg-blue-700 rounded-md disabled:opacity-50"
+                        >
+                            {pending ? "Registering..." : "Register User"}
+                        </button>
                     </form>
                 </div>
             </div>
