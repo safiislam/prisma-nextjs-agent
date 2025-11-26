@@ -17,5 +17,4 @@ model User {
   password String
   address  String?
   phone    String?
-  phone2   String?
 }
