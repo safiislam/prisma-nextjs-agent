@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
 import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken'
 import db from "@/db/db";
 import z from "zod";
+import { cookies } from 'next/headers';
 
 const schema = z.object({
     name: z.string().min(1, "Name is required"),
@@ -38,7 +40,7 @@ export async function createUser(prevState: any, formData: FormData) {
             };
         }
 
-        const hashedPassword = await bcrypt.hash(password, 12);
+        const hashedPassword = await bcrypt.hash(password, 12,);
 
         const result = await db.user.create({
             data: {
@@ -48,8 +50,8 @@ export async function createUser(prevState: any, formData: FormData) {
             },
         });
         const jwtPayload = { id: result.id, role: result.role }
-        const token = jwt.sign(jwtPayload, 'this is Secret')
-
+        const token = jwt.sign(jwtPayload, process.env.NEXT_PUBLIC_JWT_SECRET as string, { expiresIn: 60 * 60 });
+        (await cookies()).set('Authorization', token)
         return {
             errors: {},
             message: "User Registered Successfully 🎉",
