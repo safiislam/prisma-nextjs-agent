@@ -48,6 +48,7 @@ export async function loginUser(initialState: any, formData: FormData) {
             message: "User Login Successfully 🎉",
         };
     } catch (error: any) {
+        console.log(error)
         return {
             errors: {},
             message: "Something went wrong. Try again!",

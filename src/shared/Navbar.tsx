@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { Menu, X, ChevronDown } from 'lucide-react';
+import { deleteAuthCookie, getToken } from '@/utils/deleteAuthCookie';
+import { redirect } from 'next/navigation';
 
 const navData = [
     {
@@ -22,16 +24,30 @@ const navData = [
     }
 ]
 
-export default function Navbar() {
+export default function Navbar({ token }) {
+    // const [token, setToken] = useState<string | null>(null);
+
+    // useEffect(() => {
+    //     getToken().then((data) => setToken(data as string));
+    // }, []);
     const [isOpen, setIsOpen] = useState(false);
     const [isProductsOpen, setIsProductsOpen] = useState(false);
+    const handelLogin = async () => {
+        if (token) {
+            await deleteAuthCookie()
+            // setToken(null)
+        }
+        else {
+            redirect('/login')
+        }
+    }
 
     return (
         <nav className="bg-white shadow-lg border-b">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
                     {/* Logo */}
-                    <div className="flex-shrink-0">
+                    <div className="shrink-0">
                         <h1 className="text-2xl font-bold text-blue-600">Logo</h1>
                     </div>
 
@@ -86,9 +102,9 @@ export default function Navbar() {
                     </div>
 
                     {/* CTA Button - Desktop */}
-                    <div className="hidden md:block">
+                    <div onClick={handelLogin} className="hidden md:block">
                         <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200">
-                            Get Started
+                            {token ? 'Get Started' : "Login"}
                         </button>
                     </div>
 

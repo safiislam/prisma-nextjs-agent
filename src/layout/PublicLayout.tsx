@@ -1,15 +1,16 @@
-'use client'
-import Navbar from "@/shared/Navbar";
+// 'use client'
+import NavLoader from "@/shared/NavLoader";
+import { cookies } from "next/headers";
 import React from "react";
-import { usePathname } from "next/navigation";
 
-export default function PublicLayout({ children }: { children: React.ReactNode }) {
-    const pathname = usePathname()
-    const hideNavbar = pathname.startsWith("/dashboard");
+export default async function PublicLayout({ children }: { children: React.ReactNode }) {
+
+    const token = (await cookies()).get("Authorization")?.value || null;
 
     return (
         <div>
-            {!hideNavbar && <Navbar />}
+
+            <NavLoader token={token as string} />
             {children}
         </div>
     )

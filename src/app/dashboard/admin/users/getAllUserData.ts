@@ -4,6 +4,8 @@ import { cookies } from "next/headers";
 import status from "http-status";
 import AppError from "@/utils/AppError";
 import { adminVerify } from "../../jwtVerify";
+import { deleteAuthCookie } from "@/utils/deleteAuthCookie";
+import { redirect } from "next/navigation";
 
 export async function getAllUserData() {
 
@@ -18,12 +20,15 @@ export async function getAllUserData() {
         return admin;
 
     } catch (error) {
-        const cookie = (await cookies()).get('Authorization');
-        if (cookie) {
-            (await cookies()).delete('Authorization');   // <--- NOW VALID
+        if (error) {
+            const cookie = (await cookies()).get('Authorization');
+            if (cookie?.name) {
+                // todo
+                // await deleteAuthCookie()  // <--- NOW VALID
+            }
         }
 
         // Redirect always must be last
-        // redirect("/");
+        redirect("/");
     }
 }
